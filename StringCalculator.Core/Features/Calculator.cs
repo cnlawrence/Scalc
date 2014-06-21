@@ -1,4 +1,6 @@
-﻿using StringCalculator.Core.Utilities;
+﻿using System;
+using System.Linq;
+using StringCalculator.Core.Utilities;
 
 namespace StringCalculator.Core.Features
 {
@@ -6,6 +8,7 @@ namespace StringCalculator.Core.Features
     {
         private readonly ILogger _logger;
         private readonly IWebService _webService;
+        private static readonly string[] DefaultDelimiter = {","};
 
         public Calculator(ILogger logger, IWebService webService)
         {
@@ -18,11 +21,16 @@ namespace StringCalculator.Core.Features
             const int defaultValue = 0;
 
             if (numbers.Length == 0 || numbers == string.Empty)
-            {
                 return defaultValue;
-            }
 
-            return defaultValue;
+            return CalculateNumbers(numbers);
+        }
+
+        private static int CalculateNumbers(string numbers)
+        {
+            var numbersToSum = numbers.Split(DefaultDelimiter, new StringSplitOptions()).ToList();
+
+            return numbersToSum.Select(int.Parse).Sum();
         }
     }
 }

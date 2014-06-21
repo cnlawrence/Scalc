@@ -22,5 +22,31 @@ namespace StringCalculator.UnitSpecs.Core
                 _result.ShouldEqual(0);
             }
         }
+
+        public class when_calculator_adds_with_default_delimiter : CalculatorSpecs
+        {
+            private int _result;
+
+            [Test]
+            public void then_it_returns_expected_result_with_three_inputs()
+            {
+                _result = SUT.Add(@"1,2,3");
+                _result.ShouldEqual(6);
+            }
+
+            [Test]
+            public void then_it_returns_expected_result_with_two_inputs()
+            {
+                _result = SUT.Add(@"1,2");
+                _result.ShouldEqual(3);
+            }
+
+            [Test]
+            public void then_it_returns_expected_result_with_one_input()
+            {
+                _result = SUT.Add(@"1701");
+                _result.ShouldEqual(1701);
+            }
+        }
     }
 }
