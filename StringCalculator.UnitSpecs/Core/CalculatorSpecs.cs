@@ -104,5 +104,27 @@ namespace StringCalculator.UnitSpecs.Core
                 ex.Message.ShouldEqual(expectedMessage);
             }
         }
+
+        public class when_calculator_throws_exception : CalculatorSpecs
+        {
+            protected override void When()
+            {
+                try
+                {
+                    SUT.Add(@"-1");
+                }
+                catch
+                {
+                    //NOM NOM
+                }
+            }
+
+            [Test]
+            public void then_it_calls_web_service()
+            {
+                var webServiceMock = GetMockFor<IWebService>();
+                webServiceMock.Verify(s => s.PhoneHome(It.IsAny<string>()));
+            }
+        }
     }
 }

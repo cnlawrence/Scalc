@@ -21,10 +21,18 @@ namespace StringCalculator.Core.Features
 
         public int Add(string numbers)
         {
-            var calculatedValue = CalculateNumbers(numbers);
-            _logger.Write(calculatedValue.ToString(CultureInfo.InvariantCulture));
+            try
+            {
+                var calculatedValue = CalculateNumbers(numbers);
+                _logger.Write(calculatedValue.ToString(CultureInfo.InvariantCulture));
 
-            return calculatedValue;
+                return calculatedValue;
+            }
+            catch (Exception ex)
+            {
+                _webService.PhoneHome(string.Format(@"Some kind of error has failed due to : {0}", ex.Message));
+                throw;
+            }
         }
 
         private int CalculateNumbers(string numbers)
