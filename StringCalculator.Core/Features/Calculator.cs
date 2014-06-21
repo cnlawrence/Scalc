@@ -63,7 +63,7 @@ namespace StringCalculator.Core.Features
                     throw new Exception(exceptionMessage);
                 }
 
-                return numbersToSumList.Select(int.Parse).Sum();
+                return numbersToSumList.Select(int.Parse).Where(s => s < 1000).Sum();
             }
 
             return defaultValue;

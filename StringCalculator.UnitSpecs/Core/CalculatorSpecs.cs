@@ -43,7 +43,7 @@ namespace StringCalculator.UnitSpecs.Core
             [Test]
             public void then_it_returns_expected_result_with_one_input()
             {
-                SUT.Add(@"1701").ShouldEqual(1701);
+                SUT.Add(@"10").ShouldEqual(10);
             }
         }
 
@@ -105,7 +105,7 @@ namespace StringCalculator.UnitSpecs.Core
             }
         }
 
-        public class when_calculator_throws_exception : CalculatorSpecs
+        public class when_calculator_add_throws_exception : CalculatorSpecs
         {
             protected override void When()
             {
@@ -124,6 +124,15 @@ namespace StringCalculator.UnitSpecs.Core
             {
                 var webServiceMock = GetMockFor<IWebService>();
                 webServiceMock.Verify(s => s.PhoneHome(It.IsAny<string>()));
+            }
+        }
+
+        public class when_calculator_adds_big_numbers : CalculatorSpecs
+        {
+            [Test]
+            public void then_it_adds_only_numbers_less_than_100()
+            {
+                SUT.Add(@"2,1001").ShouldEqual(2);
             }
         }
     }
