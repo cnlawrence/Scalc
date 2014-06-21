@@ -81,6 +81,12 @@ namespace StringCalculator.UnitSpecs.Core
             {
                 SUT.Add(string.Format(@"//[*][%]{0}1*2%3", Environment.NewLine)).ShouldEqual(6);
             }
+
+            [Test]
+            public void then_it_should_return_expected_result_with_multiple_default_delimiters_longer_than_one_char()
+            {
+                SUT.Add(string.Format(@"//[***][$$$$]{0}1***2$$$$3", Environment.NewLine)).ShouldEqual(6);
+            }
         }
 
         public class when_calculator_add_is_called : CalculatorSpecs
