@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using StringCalculator.Core.Utilities;
@@ -20,28 +21,33 @@ namespace StringCalculator.Core.Features
 
         public int Add(string numbers)
         {
-            const int defaultValue = 0;
+            var calculatedValue = CalculateNumbers(numbers);
+            _logger.Write(calculatedValue.ToString(CultureInfo.InvariantCulture));
 
-            if (numbers.Length == 0 || numbers == string.Empty)
-                return defaultValue;
-
-            return CalculateNumbers(numbers);
+            return calculatedValue;
         }
 
         private int CalculateNumbers(string numbers)
         {
-            const string userDelimiterRegex = @"(?<start>//)(?<userDefinedDelimiters>.*)(?<newLine>.\n)";
-            if (Regex.IsMatch(numbers,userDelimiterRegex))
+            const int defaultValue = 0;
+
+            if (numbers != string.Empty)
             {
-                var userAssignedDelimiter = Regex.Match(numbers, userDelimiterRegex).Groups[2].Value;
-                _defaultDelimitersList.Clear();
-                _defaultDelimitersList = new List<string> { Environment.NewLine, userAssignedDelimiter };
-                numbers = Regex.Replace(numbers, userDelimiterRegex, string.Empty); 
+                const string userDelimiterRegex = @"(?<start>//)(?<userDefinedDelimiters>.*)(?<newLine>.\n)";
+                if (Regex.IsMatch(numbers, userDelimiterRegex))
+                {
+                    var userAssignedDelimiter = Regex.Match(numbers, userDelimiterRegex).Groups[2].Value;
+                    _defaultDelimitersList.Clear();
+                    _defaultDelimitersList = new List<string> {Environment.NewLine, userAssignedDelimiter};
+                    numbers = Regex.Replace(numbers, userDelimiterRegex, string.Empty);
+                }
+
+                var numbersToSumList = numbers.Split(_defaultDelimitersList.ToArray(), StringSplitOptions.None).ToList();
+
+                return numbersToSumList.Select(int.Parse).Sum();
             }
 
-            var numbersToSumList = numbers.Split(_defaultDelimitersList.ToArray(), StringSplitOptions.None).ToList();
-
-            return numbersToSumList.Select(int.Parse).Sum();
+            return defaultValue;
         }
     }
 }

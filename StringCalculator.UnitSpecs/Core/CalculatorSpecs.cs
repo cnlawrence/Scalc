@@ -1,8 +1,10 @@
 ﻿using System;
+using Moq;
 using NUnit.Framework;
 using Should;
 using SpecsFor;
 using StringCalculator.Core.Features;
+using StringCalculator.Core.Utilities;
 
 namespace StringCalculator.UnitSpecs.Core
 {
@@ -66,6 +68,20 @@ namespace StringCalculator.UnitSpecs.Core
             public void then_it_should_return_expected_result_with_new_default_delimiter()
             {
                 SUT.Add(string.Format(@"//;{0}1;2",Environment.NewLine)).ShouldEqual(3);
+            }
+        }
+
+        public class when_calculator_add_is_called : CalculatorSpecs
+        {
+            protected override void When()
+            {
+                SUT.Add(@"1,2");
+            }
+            [Test]
+            public void then_it_should_invoke_loggers_write_function()
+            {
+                var loggerMock = GetMockFor<ILogger>();
+                loggerMock.Verify(l => l.Write(Moq.It.IsAny<string>()),Times.Once());
             }
         }
     }
