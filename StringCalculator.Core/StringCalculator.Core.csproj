@@ -53,6 +53,8 @@
     <Compile Include="Setup\Bootstrapper.cs" />
     <Compile Include="Setup\Registries\ConventionalRegistry.cs" />
     <Compile Include="Setup\Scanners\GenericScanner.cs" />
+    <Compile Include="Utilities\Logger.cs" />
+    <Compile Include="Utilities\WebService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
