@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using StringCalculator.Core.Utilities;
@@ -9,7 +10,7 @@ namespace StringCalculator.Core.Features
     {
         private readonly ILogger _logger;
         private readonly IWebService _webService;
-        private static readonly string[] DefaultDelimiter = {","};
+        private List<string> _defaultDelimitersList = new List<string> {Environment.NewLine,","};
 
         public Calculator(ILogger logger, IWebService webService)
         {
@@ -27,19 +28,20 @@ namespace StringCalculator.Core.Features
             return CalculateNumbers(numbers);
         }
 
-        private static int CalculateNumbers(string numbers)
+        private int CalculateNumbers(string numbers)
         {
-            var scrubbedNumbers = ScrubNewLines(numbers);
+            const string userDelimiterRegex = @"(?<start>//)(?<userDefinedDelimiters>.*)(?<newLine>.\n)";
+            if (Regex.IsMatch(numbers,userDelimiterRegex))
+            {
+                var userAssignedDelimiter = Regex.Match(numbers, userDelimiterRegex).Groups[2].Value;
+                _defaultDelimitersList.Clear();
+                _defaultDelimitersList = new List<string> { Environment.NewLine, userAssignedDelimiter };
+                numbers = Regex.Replace(numbers, userDelimiterRegex, string.Empty); 
+            }
 
-            var numbersToSum = scrubbedNumbers.Split(DefaultDelimiter, new StringSplitOptions()).ToList();
+            var numbersToSumList = numbers.Split(_defaultDelimitersList.ToArray(), StringSplitOptions.None).ToList();
 
-            return numbersToSum.Select(int.Parse).Sum();
-        }
-
-        private static string ScrubNewLines(string numbers)
-        {
-            var newLineRegEx = new Regex(@"\n");
-            return newLineRegEx.Replace(numbers, DefaultDelimiter[0]);
+            return numbersToSumList.Select(int.Parse).Sum();
         }
     }
 }

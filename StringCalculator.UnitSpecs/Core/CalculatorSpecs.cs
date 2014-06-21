@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using Should;
 using SpecsFor;
 using StringCalculator.Core.Features;
@@ -25,49 +26,46 @@ namespace StringCalculator.UnitSpecs.Core
 
         public class when_calculator_adds_with_default_delimiter : CalculatorSpecs
         {
-            private int _result;
-
             [Test]
             public void then_it_returns_expected_result_with_three_inputs()
             {
-                _result = SUT.Add(@"1,2,3");
-                _result.ShouldEqual(6);
+                SUT.Add(@"1,2,3").ShouldEqual(6);
             }
 
             [Test]
             public void then_it_returns_expected_result_with_two_inputs()
             {
-                _result = SUT.Add(@"1,2");
-                _result.ShouldEqual(3);
+                SUT.Add(@"1,2").ShouldEqual(3);
             }
 
             [Test]
             public void then_it_returns_expected_result_with_one_input()
             {
-                _result = SUT.Add(@"1701");
-                _result.ShouldEqual(1701);
+                SUT.Add(@"1701").ShouldEqual(1701);
             }
         }
 
         public class when_calculator_adds_with_new_line_character_instead_of_delimeter : CalculatorSpecs
         {
-            private int _result;
-
             [Test]
             public void then_it_returns_expected_result_with_one_new_line_character()
             {
-                _result = SUT.Add(@"1
-2,3");
-                _result.ShouldEqual(6);
+                SUT.Add(String.Format(@"1{0}2,3", Environment.NewLine)).ShouldEqual(6);
             }
 
             [Test]
             public void then_it_returns_expected_result_with_two_new_line_character()
             {
-                _result = SUT.Add(@"1
-2
-3");
-                _result.ShouldEqual(6);
+                SUT.Add(String.Format(@"1{0}2{0}3", Environment.NewLine)).ShouldEqual(6);
+            }
+        }
+
+        public class when_calculator_adds_with_different_delimiter : CalculatorSpecs
+        {
+            [Test]
+            public void then_it_should_return_expected_result_with_new_default_delimiter()
+            {
+                SUT.Add(string.Format(@"//;{0}1;2",Environment.NewLine)).ShouldEqual(3);
             }
         }
     }
