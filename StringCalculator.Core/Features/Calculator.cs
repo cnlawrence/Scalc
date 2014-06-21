@@ -45,13 +45,17 @@ namespace StringCalculator.Core.Features
 
                 if (userDelimiterRegex.IsMatch(numbers))
                 {
-                    var userAssignedDelimiters = userDelimiterRegex.Match(numbers).Groups[2].Value;
+                    var userAssignedDelimiters = userDelimiterRegex.Match(numbers).Groups[2].Value.Replace(@"\\", string.Empty);
                     
                     _defaultDelimitersList.Clear();
                     _defaultDelimitersList = new List<string> {Environment.NewLine};
-                    var delimiterScrubRegex = new Regex(@"//|\[|\]");
-                    userAssignedDelimiters = delimiterScrubRegex.Replace(userAssignedDelimiters, string.Empty);
-                    _defaultDelimitersList.Add(userAssignedDelimiters);
+                    
+                    var delimiterRegex = new Regex(@"\[(\W|\w)\1+\]|.");
+                    foreach (Match match in delimiterRegex.Matches(userAssignedDelimiters))
+                    {
+                        var delimiterScrubRegex = new Regex(@"\[|\]");
+                        _defaultDelimitersList.Add( delimiterScrubRegex.Replace(match.Value, string.Empty));
+                    }
 
                     numbers = userDelimiterRegex.Replace(numbers, string.Empty);
                 }

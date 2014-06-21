@@ -73,7 +73,13 @@ namespace StringCalculator.UnitSpecs.Core
             [Test]
             public void then_it_should_return_expected_result_with_one_default_delimiter_longer_than_one_char()
             {
-                SUT.Add(string.Format(@"//[***]{0}1***2***", Environment.NewLine)).ShouldEqual(3);
+                SUT.Add(string.Format(@"//[***]{0}1***2***3", Environment.NewLine)).ShouldEqual(6);
+            }
+
+            [Test]
+            public void then_it_should_return_expected_result_with_multiple_default_delimiters()
+            {
+                SUT.Add(string.Format(@"//[*][%]{0}1*2%3", Environment.NewLine)).ShouldEqual(6);
             }
         }
 
