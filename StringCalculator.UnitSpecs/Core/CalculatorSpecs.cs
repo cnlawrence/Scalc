@@ -48,5 +48,27 @@ namespace StringCalculator.UnitSpecs.Core
                 _result.ShouldEqual(1701);
             }
         }
+
+        public class when_calculator_adds_with_new_line_character_instead_of_delimeter : CalculatorSpecs
+        {
+            private int _result;
+
+            [Test]
+            public void then_it_returns_expected_result_with_one_new_line_character()
+            {
+                _result = SUT.Add(@"1
+2,3");
+                _result.ShouldEqual(6);
+            }
+
+            [Test]
+            public void then_it_returns_expected_result_with_two_new_line_character()
+            {
+                _result = SUT.Add(@"1
+2
+3");
+                _result.ShouldEqual(6);
+            }
+        }
     }
 }

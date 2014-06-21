@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using StringCalculator.Core.Utilities;
 
 namespace StringCalculator.Core.Features
@@ -28,9 +29,17 @@ namespace StringCalculator.Core.Features
 
         private static int CalculateNumbers(string numbers)
         {
-            var numbersToSum = numbers.Split(DefaultDelimiter, new StringSplitOptions()).ToList();
+            var scrubbedNumbers = ScrubNewLines(numbers);
+
+            var numbersToSum = scrubbedNumbers.Split(DefaultDelimiter, new StringSplitOptions()).ToList();
 
             return numbersToSum.Select(int.Parse).Sum();
+        }
+
+        private static string ScrubNewLines(string numbers)
+        {
+            var newLineRegEx = new Regex(@"\n");
+            return newLineRegEx.Replace(numbers, DefaultDelimiter[0]);
         }
     }
 }
