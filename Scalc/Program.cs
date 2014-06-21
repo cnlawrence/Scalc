@@ -11,13 +11,24 @@ namespace Scalc
         {
             ConfigureContainer();
 
-            var calculator = ObjectFactory.GetInstance<Calculator>();
+            CallCalculator(args[0]);
+            
+            var userInput = Console.ReadLine();
 
-            foreach (var a in args)
+            while (userInput.Length > 0)
             {
-                var result = String.Format(@" The result is {0}", calculator.Add(a.Replace("'",string.Empty)));
-                Console.WriteLine(result);
+                CallCalculator(userInput);
+                userInput = Console.ReadLine();
             }
+        }
+
+        private static void CallCalculator(string userInput)
+        {
+            var calculator = ObjectFactory.GetInstance<Calculator>();
+            
+            var result = String.Format(@"The result is {0}", calculator.Add(userInput.Replace("'", string.Empty)));
+            Console.WriteLine(result);
+            Console.Write("another input please ");
         }
 
         private static void ConfigureContainer()
