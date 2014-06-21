@@ -41,16 +41,22 @@ namespace StringCalculator.Core.Features
 
             if (numbers != string.Empty)
             {
-                const string userDelimiterRegex = @"(?<start>//)(?<userDefinedDelimiters>.*)(?<newLine>.\n)";
-                if (Regex.IsMatch(numbers, userDelimiterRegex))
+                var userDelimiterRegex = new Regex(@"(?<start>//)(?<userDefinedDelimiters>.*|\[.*\])(?<newLine>.\n)");
+
+                if (userDelimiterRegex.IsMatch(numbers))
                 {
-                    var userAssignedDelimiter = Regex.Match(numbers, userDelimiterRegex).Groups[2].Value;
+                    var userAssignedDelimiters = userDelimiterRegex.Match(numbers).Groups[2].Value;
+                    
                     _defaultDelimitersList.Clear();
-                    _defaultDelimitersList = new List<string> {Environment.NewLine, userAssignedDelimiter};
-                    numbers = Regex.Replace(numbers, userDelimiterRegex, string.Empty);
+                    _defaultDelimitersList = new List<string> {Environment.NewLine};
+                    var delimiterScrubRegex = new Regex(@"//|\[|\]");
+                    userAssignedDelimiters = delimiterScrubRegex.Replace(userAssignedDelimiters, string.Empty);
+                    _defaultDelimitersList.Add(userAssignedDelimiters);
+
+                    numbers = userDelimiterRegex.Replace(numbers, string.Empty);
                 }
 
-                var numbersToSumList = numbers.Split(_defaultDelimitersList.ToArray(), StringSplitOptions.None).ToList();
+                var numbersToSumList = numbers.Split(_defaultDelimitersList.ToArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
 
                 var negativeNumbers = numbersToSumList.Where(n => int.Parse(n) < 0).ToList();
 

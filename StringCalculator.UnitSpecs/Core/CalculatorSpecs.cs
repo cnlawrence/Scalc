@@ -62,12 +62,18 @@ namespace StringCalculator.UnitSpecs.Core
             }
         }
 
-        public class when_calculator_adds_with_different_delimiter : CalculatorSpecs
+        public class when_calculator_adds_with_user_defined_delimiters : CalculatorSpecs
         {
             [Test]
-            public void then_it_should_return_expected_result_with_new_default_delimiter()
+            public void then_it_should_return_expected_result_with_one_default_delimiter()
             {
                 SUT.Add(string.Format(@"//;{0}1;2",Environment.NewLine)).ShouldEqual(3);
+            }
+
+            [Test]
+            public void then_it_should_return_expected_result_with_one_default_delimiter_longer_than_one_char()
+            {
+                SUT.Add(string.Format(@"//[***]{0}1***2***", Environment.NewLine)).ShouldEqual(3);
             }
         }
 
