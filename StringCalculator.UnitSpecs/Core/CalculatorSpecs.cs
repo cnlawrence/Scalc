@@ -77,11 +77,31 @@ namespace StringCalculator.UnitSpecs.Core
             {
                 SUT.Add(@"1,2");
             }
+
             [Test]
             public void then_it_should_invoke_loggers_write_function()
             {
                 var loggerMock = GetMockFor<ILogger>();
-                loggerMock.Verify(l => l.Write(Moq.It.IsAny<string>()),Times.Once());
+                loggerMock.Verify(l => l.Write(It.IsAny<string>()),Times.Once());
+            }
+        }
+
+        public class when_calculator_adds_with_negative_numbers : CalculatorSpecs
+        {
+            [Test]
+            public void then_it_should_thow_error_for_one_negative_number_and_returns_expected_exception_message()
+            {
+                const string expectedMessage = @"negatives not allowed - -1";
+                var ex = Assert.Throws<Exception>(() => SUT.Add(@"-1"));
+                ex.Message.ShouldEqual(expectedMessage);
+            }
+
+            [Test]
+            public void then_it_should_thow_error_for_multiple_negative_numbers_and_returns_expected_exception_message()
+            {
+                const string expectedMessage = @"negatives not allowed - -1 -2";
+                var ex = Assert.Throws<Exception>(() => SUT.Add(@"-1,-2"));
+                ex.Message.ShouldEqual(expectedMessage);
             }
         }
     }

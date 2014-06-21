@@ -44,6 +44,17 @@ namespace StringCalculator.Core.Features
 
                 var numbersToSumList = numbers.Split(_defaultDelimitersList.ToArray(), StringSplitOptions.None).ToList();
 
+                var negativeNumbers = numbersToSumList.Where(n => int.Parse(n) < 0).ToList();
+
+                if (negativeNumbers.Any())
+                {
+                    var exceptionMessageList = new List<string> {@"negatives not allowed -"};
+                    exceptionMessageList.AddRange(negativeNumbers);
+                    var exceptionMessage = String.Join(" ", exceptionMessageList);
+
+                    throw new Exception(exceptionMessage);
+                }
+
                 return numbersToSumList.Select(int.Parse).Sum();
             }
 
