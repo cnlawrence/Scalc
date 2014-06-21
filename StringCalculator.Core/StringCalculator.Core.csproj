@@ -50,9 +50,6 @@
     <Compile Include="Utilities\ILogger.cs" />
     <Compile Include="Utilities\IWebService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Setup\Bootstrapper.cs" />
-    <Compile Include="Setup\Registries\ConventionalRegistry.cs" />
-    <Compile Include="Setup\Scanners\GenericScanner.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\WebService.cs" />
   </ItemGroup>
