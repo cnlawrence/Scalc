@@ -23,10 +23,18 @@ namespace StringCalculator.Core.Features
         {
             try
             {
-                var calculatedValue = CalculateNumbers(numbers);
-                _logger.Write(calculatedValue.ToString(CultureInfo.InvariantCulture));
+                const int defaultValue = 0;
 
-                return calculatedValue;
+                if (numbers != string.Empty)
+                {
+                    var processedNumbers = ProcessUserInput(numbers);
+                    var calculatedValue = processedNumbers.Where(s => s < 1000).Sum();
+                    _logger.Write(calculatedValue.ToString(CultureInfo.InvariantCulture));
+
+                    return calculatedValue;
+                }
+
+                return defaultValue;
             }
             catch (Exception ex)
             {
@@ -35,48 +43,52 @@ namespace StringCalculator.Core.Features
             }
         }
 
-        private int CalculateNumbers(string numbers)
+        private IEnumerable<int> ProcessUserInput(string userInput)
         {
-            const int defaultValue = 0;
+            var userInputScrubbedToNumbers = ScrubDelimiters(userInput);
 
-            if (numbers != string.Empty)
+            var numbersToSumList = userInputScrubbedToNumbers.Split(_defaultDelimitersList.ToArray(), StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
+
+            var negativeNumbers = numbersToSumList.Where(n => n < 0).ToList();
+
+            ValidateInputForNegativeNumbers(negativeNumbers);
+
+            return numbersToSumList;
+        }
+
+        private static void ValidateInputForNegativeNumbers(List<int> negativeNumbers)
+        {
+            if (negativeNumbers.Any())
             {
-                var userDelimiterRegex = new Regex(@"(?<start>//)(?<userDefinedDelimiters>.*|\[.*\])(?<newLine>.\n)");
+                var exceptionMessageList = new List<string> {@"negatives not allowed -"};
+                exceptionMessageList.AddRange(negativeNumbers.Select(n => n.ToString(CultureInfo.InvariantCulture)));
+                var exceptionMessage = String.Join(" ", exceptionMessageList);
 
-                if (userDelimiterRegex.IsMatch(numbers))
+                throw new Exception(exceptionMessage);
+            }
+        }
+
+        private string ScrubDelimiters(string userInputToProcess)
+        {
+            var userDelimiterInputRegex = new Regex(@"(?<start>//)(?<userDefinedDelimiters>.*|\[.*\])(?<newLine>.\n)");
+            var scrubbedToNumbers = userDelimiterInputRegex.Replace(userInputToProcess, string.Empty);
+
+            if (userDelimiterInputRegex.IsMatch(userInputToProcess))
+            {
+                var userAssignedDelimiters = userDelimiterInputRegex.Match(userInputToProcess).Groups[2].Value;
+
+                _defaultDelimitersList.Clear();
+                _defaultDelimitersList = new List<string> {Environment.NewLine};
+
+                var delimiterRegex = new Regex(@"\[(\W|\w)\1+\]|.");
+                foreach (Match match in delimiterRegex.Matches(userAssignedDelimiters))
                 {
-                    var userAssignedDelimiters = userDelimiterRegex.Match(numbers).Groups[2].Value.Replace(@"\\", string.Empty);
-                    
-                    _defaultDelimitersList.Clear();
-                    _defaultDelimitersList = new List<string> {Environment.NewLine};
-                    
-                    var delimiterRegex = new Regex(@"\[(\W|\w)\1+\]|.");
-                    foreach (Match match in delimiterRegex.Matches(userAssignedDelimiters))
-                    {
-                        var delimiterScrubRegex = new Regex(@"\[|\]");
-                        _defaultDelimitersList.Add( delimiterScrubRegex.Replace(match.Value, string.Empty));
-                    }
-
-                    numbers = userDelimiterRegex.Replace(numbers, string.Empty);
+                    var scrubbedDelimiter = Regex.Replace(match.Value, @"\[|\]", string.Empty);
+                    _defaultDelimitersList.Add(scrubbedDelimiter);
                 }
-
-                var numbersToSumList = numbers.Split(_defaultDelimitersList.ToArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
-
-                var negativeNumbers = numbersToSumList.Where(n => int.Parse(n) < 0).ToList();
-
-                if (negativeNumbers.Any())
-                {
-                    var exceptionMessageList = new List<string> {@"negatives not allowed -"};
-                    exceptionMessageList.AddRange(negativeNumbers);
-                    var exceptionMessage = String.Join(" ", exceptionMessageList);
-
-                    throw new Exception(exceptionMessage);
-                }
-
-                return numbersToSumList.Select(int.Parse).Where(s => s < 1000).Sum();
             }
 
-            return defaultValue;
+            return scrubbedToNumbers;
         }
     }
 }
